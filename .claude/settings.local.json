@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python inspect_cv.py:*)",
+      "Bash(python generate_cv.py:*)",
+      "Bash(git init:*)",
+      "Bash(git remote add:*)"
+    ]
+  }
+}
