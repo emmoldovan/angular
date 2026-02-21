@@ -17,3 +17,4 @@
   - [10 - AI în Dezvoltare](10-AI-in-Dezvoltare.md)
   - [11 - Leadership și Soft Skills](11-Leadership-si-Soft-Skills.md)
   - [12 - Pitch și Talking Points](12-Pitch-si-Talking-Points-Emanuel.md)
+  - [13 - Răspunsuri Interviu Real](13-Raspunsuri-Interviu-Real.md)
