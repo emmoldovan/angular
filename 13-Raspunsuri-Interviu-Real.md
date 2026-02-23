@@ -1414,3 +1414,8 @@ export const appConfig: ApplicationConfig = {
 6. "SameSite=Strict + Secure + HttpOnly + Path specific"
    → Demonstreaza defense in depth
 ```
+
+
+---
+
+**Următor :** [**Ghid Principal Vue** →](Vue/00-Ghid-Pregatire.md)

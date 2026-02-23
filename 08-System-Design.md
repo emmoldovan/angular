@@ -2111,3 +2111,8 @@ this.searchControl.valueChanges.pipe(
 8. **Adapteaza la scale** - solutia pentru 1000 useri difera de cea pentru 100M useri
 9. **Ca Principal Engineer** - arata ca intelegi nu doar Angular, ci intreg ecosistemul
 10. **Practica** - deseneaza pe hartie/whiteboard, cronometreaza-te, repeta cu un coleg
+
+
+---
+
+**Următor :** [**09 - DevOps & CI/CD** →](09-DevOps-CI-CD.md)

@@ -1479,3 +1479,8 @@ Prompt engineering in contextul dezvoltarii software inseamna abilitatea de a co
 - Un prompt bine scris este, in esenta, o specificatie clara - skill fundamental de engineering
 
 **Meta-observatie:** Prompt engineering bun necesita aceleasi skill-uri ca si comunicarea buna in general: claritate, specificitate, context, si capacitatea de a anticipa ambiguitatile. Engineerii care comunica bine cu oamenii comunica bine si cu AI-ul.
+
+
+---
+
+**Următor :** [**11 - Leadership si Soft Skills** →](11-Leadership-si-Soft-Skills.md)

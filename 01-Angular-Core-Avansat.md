@@ -2058,3 +2058,8 @@ this.http.get('/api/data', { observe: 'response' }).subscribe(res => {
 ### 13. Ce componente noi ofera Angular Aria si de ce sunt relevante?
 
 **Raspuns:** Angular Aria (Developer Preview in Angular 21) este o colectie de **componente headless accesibile** -- ofera comportament si accesibilitate (ARIA roles, keyboard navigation, focus management) fara a impune stiluri vizuale. Include: Accordion, Combobox, Grid, Listbox, Menu, Tabs, Toolbar si Tree. Sunt relevante deoarece: (1) rezolva problema accesibilitatii "by default" -- dezvoltatorii nu mai trebuie sa implementeze manual ARIA attributes si keyboard handlers, (2) sunt **headless** (fara stiluri), deci se integreaza in orice design system, spre deosebire de Angular Material care vine cu Material Design, (3) urmeaza pattern-ul APG (ARIA Authoring Practices Guide) al W3C. Sunt comparabile cu Headless UI (React) sau Radix Primitives, dar native pentru Angular si integrate cu signals.
+
+
+---
+
+**Următor :** [**02 - Signals si Reactivitate** →](02-Signals-si-Reactivitate.md)

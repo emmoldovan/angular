@@ -2941,3 +2941,7 @@ As structura monitoring-ul pe trei niveluri:
 6. **Ruleaza Nginx ca root** - Fix: `user nginx;` in nginx.conf sau `--user` flag la `docker run`.
 
 7. **Variabile de mediu baked la build** - Necesita rebuild per mediu. Fix: runtime configuration cu script la container startup.
+
+---
+
+**Următor :** [**10 - AI in Dezvoltare** →](10-AI-in-Dezvoltare.md)

@@ -2596,3 +2596,8 @@ Burnout-ul e un simptom, nu o cauza. Ca Principal Engineer:
 
 8. "Ce rol joaca Principal Engineer-ul in hiring si in definirea culturii tehnice?"
    *(Arata ca intelegi scope-ul rolului dincolo de cod)*
+
+
+---
+
+**Următor :** [**12 - Pitch si Talking Points** →](12-Pitch-si-Talking-Points-Emanuel.md)

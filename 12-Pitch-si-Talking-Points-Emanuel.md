@@ -148,3 +148,8 @@
 ---
 
 *Folosește acest fișier ca ghid, nu ca script. Adaptează tonul și exemplele la conversație.*
+
+
+---
+
+**Următor :** [**13 - Raspunsuri Interviu Real** →](13-Raspunsuri-Interviu-Real.md)

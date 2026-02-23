@@ -2676,3 +2676,8 @@ Sintaxa: `-` = 1 frame (10ms virtual), `a`/`b`/`c` = valori emise, `|` = complet
 E util cand testezi: operatori de timp (`debounceTime`, `delay`, `throttle`), combinari de streams (`merge`, `combineLatest`, `switchMap`), retry logic, si orice logica RxJS complexa.
 
 Nu e necesar pentru: Observables simple (`of()`, `from()`), HTTP calls (foloseste `HttpTestingController`), sau cand `subscribe` + `done` e suficient. Marble testing adauga complexitate si trebuie folosit doar cand ofera valoare reala.
+
+
+---
+
+**Următor :** [**07 - Securitate** →](07-Securitate.md)

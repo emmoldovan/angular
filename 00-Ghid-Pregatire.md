@@ -141,3 +141,8 @@ Documentație AI: [angular.dev/ai](https://angular.dev/ai), [angular.dev/ai/deve
 ---
 
 *Ultimul update: Februarie 2025 — aliniat la Angular 21 și angular.dev*
+
+
+---
+
+**Următor :** [**01 - Angular Core Avansat** →](01-Angular-Core-Avansat.md)

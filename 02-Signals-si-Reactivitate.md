@@ -2443,3 +2443,8 @@ Acest pattern ofera **encapsulare** (doar store-ul modifica state), **derivari r
 ---
 
 *Ultimul update: Februarie 2026*
+
+
+---
+
+**Următor :** [**03 - Dependency Injection** →](03-Dependency-Injection.md)

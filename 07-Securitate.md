@@ -2356,3 +2356,8 @@ Configurare moderna: `provideHttpClient(withInterceptors([logging, auth, csrf, c
 - Plan de upgrade Angular regulat (cel putin la fiecare LTS release).
 
 **Supply chain:** Folositi Subresource Integrity (SRI) pentru CDN-uri. Considerati un registry npm privat (Verdaccio, Artifactory) pentru proiecte enterprise. Verificati ca nu aveti dependinte deprecated sau abandonate.
+
+
+---
+
+**Următor :** [**08 - System Design** →](08-System-Design.md)

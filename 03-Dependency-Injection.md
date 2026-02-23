@@ -1788,3 +1788,8 @@ export class DynamicComponent {
 ### 10. Compara `inject()` function cu constructor injection. Cand alegi una fata de cealalta?
 
 **Raspuns:** `inject()` este superior in mai multe privinte: permite crearea de **custom injection functions** reutilizabile (ex: `injectDestroy()`, `injectRouteParam()`), simplifica mostenirea (nu mai este nevoie de `super()` cu toate dependentele parintelui), ofera tipuri mai bune fara `@Inject()`, si este obligatoriu pentru functional guards/interceptors/resolvers. Constructor injection ramane valid pentru cod legacy si cand echipa prefera consistenta cu codul existent. Regula practica: cod nou foloseste `inject()`, cod existent se migreaza gradual. Singura limitare a `inject()` este ca trebuie apelat in injection context - nu poate fi folosit in metode de lifecycle sau event handlers fara `runInInjectionContext()`.
+
+
+---
+
+**Următor :** [**04 - Arhitectura si Design Patterns** →](04-Arhitectura-si-Design-Patterns.md)

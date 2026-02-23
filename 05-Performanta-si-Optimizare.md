@@ -2379,3 +2379,8 @@ Abordez optimizarea pe trei axe: **Build Time**, **Runtime**, si **Perceived Per
 - Alert-uri cand LCP > 2.5s sau INP > 200ms in productie
 - Lighthouse CI ca quality gate in pipeline (fail build daca scor < 85)
 - Review-uri de performanta trimestriale cu Angular DevTools Profiler
+
+
+---
+
+**Următor :** [**06 - Testare** →](06-Testare.md)

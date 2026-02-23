@@ -2897,3 +2897,8 @@ export const appConfig: ApplicationConfig = {
 ### 10. Cum gestionezi comunicarea intre micro-frontends (remote-uri) intr-o arhitectura Module Federation?
 
 **Raspuns:** Comunicarea intre remote-uri este intentionat limitata pentru a mentine decuplarea. Optiuni: (1) **Shared services** - servicii din librarii partajate (singleton shared) accesibile tuturor remote-urilor; de exemplu, AuthService partajat. (2) **Custom Events** (dispatchEvent/addEventListener pe window) - cel mai decuplat, functioneaza si cross-framework. (3) **Shared state store** - un NgRx store global in shell, accesibil remote-urilor. (4) **Router state** - comunicare prin URL params/query params. (5) **Event bus service** - un Subject global in shell, injectat in remote-uri. **Best practice:** minimizeaza comunicarea directa intre remote-uri. Daca doua remote-uri comunica mult, probabil ar trebui sa fie in acelasi remote. Shell-ul actioneaza ca mediator central.
+
+
+---
+
+**Următor :** [**05 - Performanta si Optimizare** →](05-Performanta-si-Optimizare.md)
