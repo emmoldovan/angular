@@ -44,3 +44,25 @@
   - [10 - DevOps, CI/CD, Azure](Vue/10-DevOps-CICD-Azure.md)
   - [11 - BFF cu C#/.NET](Vue/11-BFF-CSharp-dotNET.md)
   - [13 - Pitch Personal Vue](Vue/13-Pitch-Personal-Vue.md)
+
+---
+
+## 🟨 TypeScript / Node.js / Agentic Coding
+
+- [🏠 Ghid Principal TS/Node.js](NodeJS-TS/00-Ghid-Pregatire.md)
+
+- **Core Language**
+  - [01 - TypeScript Avansat](NodeJS-TS/01-TypeScript-Avansat.md)
+  - [02 - JavaScript Core & Event Loop](NodeJS-TS/02-JavaScript-Core-si-Event-Loop.md)
+
+- **Backend**
+  - [03 - Node.js & Express](NodeJS-TS/03-NodeJS-Express.md)
+  - [05 - Patterns & Arhitectură](NodeJS-TS/05-Patterns-si-Arhitectura.md)
+
+- **AI & Gândire**
+  - [04 - Agentic Coding & AI](NodeJS-TS/04-Agentic-Coding-AI.md)
+  - [06 - Gândire & Problem Solving](NodeJS-TS/06-Gandire-si-Problem-Solving.md)
+
+- **Bonus & Prep**
+  - [07 - React Overview](NodeJS-TS/07-React-Overview.md)
+  - [08 - Întrebări & Răspunsuri](NodeJS-TS/08-Intrebari-si-Raspunsuri.md)
