@@ -63,6 +63,11 @@
   - [04 - Agentic Coding & AI](NodeJS-TS/04-Agentic-Coding-AI.md)
   - [06 - Gândire & Problem Solving](NodeJS-TS/06-Gandire-si-Problem-Solving.md)
 
+- **Next.js & AI în Producție**
+  - [09 - Next.js & Frontend Avansat](NodeJS-TS/09-NextJS-Frontend-Avansat.md)
+  - [10 - AI în Producție](NodeJS-TS/10-AI-in-Productie.md)
+
 - **Bonus & Prep**
   - [07 - React Overview](NodeJS-TS/07-React-Overview.md)
   - [08 - Întrebări & Răspunsuri](NodeJS-TS/08-Intrebari-si-Raspunsuri.md)
+  - [11 - Întrebări Exacte Interviu ⭐](NodeJS-TS/11-Intrebari-Exacte-Interviu.md)

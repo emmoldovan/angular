@@ -69,59 +69,58 @@ Program internship 6 luni la Odeen, 4 juniori mentorizați la Arobs, 8 juniori i
 | **ÎNALTĂ** | [03-NodeJS-Express.md](./03-NodeJS-Express.md) | Node.js internals, Express middleware, API design, auth | 3h |
 | **ÎNALTĂ** | [06-Gandire-si-Problem-Solving.md](./06-Gandire-si-Problem-Solving.md) | Cum gândești, algoritmică, live coding mindset | 2h |
 | **ÎNALTĂ** | [05-Patterns-si-Arhitectura.md](./05-Patterns-si-Arhitectura.md) | Design patterns, arhitectură backend, clean code | 2h |
-| **MEDIE** | [07-React-Overview.md](./07-React-Overview.md) | React hooks, state, componente (bonus) | 1-2h |
-| **MEDIE** | [08-Intrebari-si-Raspunsuri.md](./08-Intrebari-si-Raspunsuri.md) | Q&A tipice, răspunsuri framework | 1h |
+| **CRITICĂ** | [09-NextJS-Frontend-Avansat.md](./09-NextJS-Frontend-Avansat.md) | Next.js SSR/SSG/CSR, Zustand, React Query, debugging, testing async | 3h |
+| **CRITICĂ** | [10-AI-in-Productie.md](./10-AI-in-Productie.md) | Prompt versioning, hallucination, HTTP timeout AI, tool agent, MCP, scaling | 3h |
+| **CRITICĂ** | [11-Intrebari-Exacte-Interviu.md](./11-Intrebari-Exacte-Interviu.md) | Toate întrebările exacte primite + răspunsuri complete | 2h |
+| **MEDIE** | [07-React-Overview.md](./07-React-Overview.md) | React hooks, state, componente (acoperit mai bine în 09) | 30min |
+| **MEDIE** | [08-Intrebari-si-Raspunsuri.md](./08-Intrebari-si-Raspunsuri.md) | Q&A generale + pitch personal personalizat | 1h |
 
 ---
 
-## Plan de studiu — 6 zile (3–9 martie 2026)
+## Plan de studiu ACTUALIZAT — 5 zile rămase (4–9 martie 2026)
 
-### Marți 3 martie — Fundamente JavaScript
+> ⚠️ Lista de întrebări exactă a schimbat prioritățile. Next.js, prompt versioning,
+> tool-based agents și HTTP timeout pattern sunt acum CRITICE. Planul e ajustat.
+
+### Miercuri 4 martie — JavaScript Core + Node.js event loop
 | Bloc | Ce faci |
 |------|---------|
-| Dimineață | [02 - JavaScript Core](./02-JavaScript-Core-si-Event-Loop.md): closures, prototypes, `this` |
-| După-amiază | [02] continuare: event loop, microtasks, async/await, Promises |
-| Seară | Exersează: scrie cod fără AI, înțelege fiecare linie |
+| Dimineață | [02 - JavaScript Core](./02-JavaScript-Core-si-Event-Loop.md): event loop, async/await, Promises |
+| După-amiază | [03 - Node.js](./03-NodeJS-Express.md): event loop Node, blocking thread, middleware, error handling |
+| Seară | Exersează cu voce tare: întrebările despre event loop și blocking din [11](./11-Intrebari-Exacte-Interviu.md) |
 
-### Miercuri 4 martie — TypeScript Avansat
+### Joi 5 martie — Next.js + State Management
 | Bloc | Ce faci |
 |------|---------|
-| Dimineață | [01 - TypeScript](./01-TypeScript-Avansat.md): generics, conditional types, mapped types |
-| După-amiază | [01] continuare: utility types, decorators, declaration merging |
-| Seară | Exersează: type challenges din [type-challenges](https://github.com/type-challenges/type-challenges) |
+| Dimineață | [09 - Next.js](./09-NextJS-Frontend-Avansat.md): SSR/SSG/CSR, App Router structură |
+| După-amiază | [09] continuare: Zustand, React Query, debug React, testing async |
+| Seară | Exersează cu voce tare: întrebările frontend din [11](./11-Intrebari-Exacte-Interviu.md) |
 
-### Joi 5 martie — Node.js + Express
+### Vineri 6 martie — AI în Producție (cea mai nouă zonă)
 | Bloc | Ce faci |
 |------|---------|
-| Dimineață | [03 - Node.js](./03-NodeJS-Express.md): event loop Node, streams, module system |
-| După-amiază | [03] continuare: Express middleware, routing, error handling, auth |
-| Seară | Construiește un mini REST API cu Express + TypeScript |
+| Dimineață | [10 - AI în Producție](./10-AI-in-Productie.md): HTTP timeout pattern (A/B/C), prompt versioning |
+| După-amiază | [10] continuare: hallucination prevention, tool-based agent, MCP, scaling |
+| Seară | [04 - Agentic Coding](./04-Agentic-Coding-AI.md): poveștile STAR din experiența ta reală |
 
-### Vineri 6 martie — Agentic Coding + Arhitectură
+### Sâmbătă 7 martie — TypeScript + Patterns + Pitch
 | Bloc | Ce faci |
 |------|---------|
-| Dimineață | [04 - Agentic Coding](./04-Agentic-Coding-AI.md): workflows, cum prezinți folosirea AI |
-| După-amiază | [05 - Patterns](./05-Patterns-si-Arhitectura.md): design patterns relevante pentru Node.js |
-| Seară | [06 - Gândire](./06-Gandire-si-Problem-Solving.md): exersează live coding mindset |
-
-### Sâmbătă 7 martie — React + Consolidare
-| Bloc | Ce faci |
-|------|---------|
-| Dimineață | [07 - React](./07-React-Overview.md): hooks, state management, patterns |
-| După-amiază | [08 - Q&A](./08-Intrebari-si-Raspunsuri.md): exersează răspunsurile cu voce tare |
-| Seară | Review general: identifică zonele slabe |
+| Dimineață | [01 - TypeScript](./01-TypeScript-Avansat.md): generics, utility types, narrowing |
+| După-amiază | [05 - Patterns](./05-Patterns-si-Arhitectura.md): layered architecture, DI, circuit breaker |
+| Seară | [08 - Q&A](./08-Intrebari-si-Raspunsuri.md): pitch personal, exersează cu voce tare |
 
 ### Duminică 8 martie — Review Final
 | Bloc | Ce faci |
 |------|---------|
-| Dimineață | Recitește fișierele CRITICE (01, 02, 04) |
-| După-amiază | Pregătește 3-5 povești STAR despre proiecte cu AI |
+| Dimineață | [11 - Întrebări Exacte](./11-Intrebari-Exacte-Interviu.md): parcurge toate răspunsurile |
+| După-amiază | Repetă cele mai dificile: HTTP timeout, tool agent, prompt versioning, hallucination |
 | Seară | Relaxare. Nu studia după ora 20:00. |
 
 ### Luni 9 martie — Ziua interviului
 | Oră | Ce faci |
 |-----|---------|
-| Dimineață | Recitire rapidă a întrebărilor din [08-Q&A](./08-Intrebari-si-Raspunsuri.md) |
+| Dimineață | Recitire rapidă [11 - Întrebări Exacte](./11-Intrebari-Exacte-Interviu.md) |
 | Cu 1h înainte | Relaxare, o cafea |
 | **Interviul** | **SUCCES!** |
 
