@@ -648,6 +648,32 @@ it('streams AI response token by token', async () => {
 });
 ```
 
+📐 **Angular parallel pentru Q5 (testare async component):**
+> ```typescript
+> // Angular — mock pentru IntersectionObserver (identic cu React)
+> // În test setup (identic — e Web API, nu React API)
+> global.IntersectionObserver = vi.fn((callback) => ({
+>   observe: vi.fn((el) => callback([{ isIntersecting: true, target: el }], {} as any)),
+>   unobserve: vi.fn(),
+>   disconnect: vi.fn(),
+> })) as any;
+>
+> // Angular — HttpClientTestingModule în loc de MSW (sau MSW funcționează identic)
+> it('streams AI response', async () => {
+>   const fixture = TestBed.createComponent(AIChatComponent);
+>   fixture.detectChanges();
+>
+>   // MSW funcționează identic cu Angular — framework-agnostic
+>   // SAU HttpTestingController pentru HTTP clasic (non-streaming)
+>   const req = httpMock.expectOne('/api/analyze');
+>   req.flush([{ token: 'Hello' }, { token: ' world' }]);
+>   fixture.detectChanges();
+>
+>   expect(fixture.nativeElement.textContent).toContain('Hello world');
+> });
+> ```
+> **`userEvent` vs `fireEvent` în Angular:** Angular Testing Library (`@testing-library/angular`) are același `userEvent` din `@testing-library/user-event`. Dacă testezi Angular cu Testing Library (nu doar TestBed), API-ul e identic.
+
 #### Follow-up: *"Do you prefer `userEvent` or `fireEvent`, and why?"*
 
 > `userEvent` — simulează interacțiunea reală: focus, keydown, keyup, input events în ordine corectă, cu delay-uri realiste. Un `userEvent.type(input, 'test')` simulează 4 tastare separate + evenimentele asociate.
