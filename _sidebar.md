@@ -71,3 +71,7 @@
   - [07 - React Overview](NodeJS-TS/07-React-Overview.md)
   - [08 - Întrebări & Răspunsuri](NodeJS-TS/08-Intrebari-si-Raspunsuri.md)
   - [11 - Întrebări Exacte Interviu ⭐](NodeJS-TS/11-Intrebari-Exacte-Interviu.md)
+
+- **Simulare Interviu Real**
+  - [12 - Coding Assignments ⭐](NodeJS-TS/12-Coding-Assignments.md)
+  - [13 - Scoring & Red Flags ⭐](NodeJS-TS/13-Scoring-si-Red-Flags.md)

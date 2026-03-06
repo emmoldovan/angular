@@ -72,6 +72,8 @@ Program internship 6 luni la Odeen, 4 juniori mentorizați la Arobs, 8 juniori i
 | **CRITICĂ** | [09-NextJS-Frontend-Avansat.md](./09-NextJS-Frontend-Avansat.md) | Next.js SSR/SSG/CSR, Zustand, React Query, debugging, testing async | 3h |
 | **CRITICĂ** | [10-AI-in-Productie.md](./10-AI-in-Productie.md) | Prompt versioning, hallucination, HTTP timeout AI, tool agent, MCP, scaling | 3h |
 | **CRITICĂ** | [11-Intrebari-Exacte-Interviu.md](./11-Intrebari-Exacte-Interviu.md) | Toate întrebările exacte primite + răspunsuri complete | 2h |
+| **CRITICĂ** | [12-Coding-Assignments.md](./12-Coding-Assignments.md) | Cele 4 teme de cod live din Excel — Chrome Ext, Chat-URL, PR Review, Form Builder | 3h |
+| **CRITICĂ** | [13-Scoring-si-Red-Flags.md](./13-Scoring-si-Red-Flags.md) | Rubrica de scoring (9 dimensiuni), flow 75 min, 20 întrebări cu Strong Signals/Red Flags | 2h |
 | **MEDIE** | [07-React-Overview.md](./07-React-Overview.md) | React hooks, state, componente (acoperit mai bine în 09) | 30min |
 | **MEDIE** | [08-Intrebari-si-Raspunsuri.md](./08-Intrebari-si-Raspunsuri.md) | Q&A generale + pitch personal personalizat | 1h |
 
@@ -216,6 +218,43 @@ Program internship 6 luni la Odeen, 4 juniori mentorizați la Arobs, 8 juniori i
 - **Continue.dev** — open source alternative la Copilot
 - **Aider** — CLI tool pentru agentic coding
 - **MCP (Model Context Protocol)** — protocol pentru a conecta AI la tools externe
+
+---
+
+## Flow Interviu — 75 de minute (din Excel)
+
+> Știi exact cum e structurat interviul. Pregătește-te pentru fiecare bloc.
+
+| Minut | Bloc | Ce faci tu |
+|-------|------|------------|
+| **0-5** | Introducere | Pitch personal: 10+ ani, Adobe AI, framework agnostic, agentic coding |
+| **5-15** | **"Walk me through your AI setup"** | Explici workflow: CLAUDE.md → prompt → verify → iterate. Menționezi Claude Code, MCP |
+| **15-35** | Întrebări tehnice Frontend/Backend | SSR/SSG, event loop, Express, React Query — răspunsuri cu trade-offs |
+| **35-75** | **Coding Assignment (live)** | Screen share ON. Planifici 5 min, ceri clarificări, then cod cu AI |
+| **75** | Q&A | Întreabă despre tech stack, AI adoption în echipă, așteptări rol |
+
+### Reguli de aur pentru Coding Assignment
+
+```
+1. PLAN înainte de cod — spui cu voce tare ce vei construi (5 min)
+2. PROMPT explicit — dai AI-ului context: "Scrie un Express endpoint care..."
+3. VERIFY tot ce generează AI — explici de ce e bine sau de ce modifici
+4. EDGE CASES — menționezi ce nu ai acoperit și cum ai acoperi în prod
+5. PROCESS > OUTPUT — intervievatorul vede CUM gândești, nu doar rezultatul
+```
+
+### Dimensiunile de scoring (din rubrica intervievatorului)
+
+| Dimensiune | Prag Hire | Prag Strong Hire |
+|-----------|-----------|------------------|
+| AI Workflow | ≥4/5 | 5/5 |
+| Frontend Depth | ≥3/5 | ≥4/5 |
+| Backend/Node.js | ≥3/5 | ≥4/5 |
+| Architecture | ≥3/5 | ≥4/5 |
+| Coding Assignment | ≥3/5 | ≥4/5 |
+| **TOTAL** | **≥32/45** | **≥38/45** |
+
+> **Detalii complete:** [13 - Scoring & Red Flags](./13-Scoring-si-Red-Flags.md) | [12 - Coding Assignments](./12-Coding-Assignments.md)
 
 ---
 
