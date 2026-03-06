@@ -164,6 +164,15 @@ export default function DashboardPage() {
 - **Nu menționezi cache invalidation** — ISR fără revalidation e un antipattern: conținutul e stale la infinit.
 - **Nu consideri data layer deloc** — SSR + un DB call lent = TTF byte mai rău decât CSR.
 
+📐 **Angular parallel pentru Q1:**
+> Aceleași decizii se iau și în Angular:
+> - `isPlatformServer()` → rulezi cod doar pe server (Angular Universal)
+> - Angular prerendering (`outputMode: 'static'`) → echivalentul SSG
+> - Default Angular SPA → CSR
+> - `window`/`localStorage` pe server în Angular Universal → același problem → `isPlatformBrowser()` check
+>
+> Când răspunzi: *"Am luat aceste decizii și în Angular Universal. Logica e identică — ce nu există pe server (window, localStorage, browser APIs) crăpă fără guard."*
+
 #### Follow-up: *"What breaks when you SSR a component that uses `window` or `localStorage`?"*
 
 > `window` și `localStorage` nu există pe server — sunt Browser APIs. Un component care le accesează direct în body va crăpa la SSR cu `ReferenceError: window is not defined`.
@@ -272,6 +281,18 @@ const UserPrefsContext = createContext<UserPrefs>(defaultPrefs);
 const UserAuthContext = createContext<AuthUser | null>(null);
 ```
 
+📐 **Angular parallel pentru Q2 (re-renders):**
+> | React concept | Angular equivalent |
+> |--------------|-------------------|
+> | Re-render la schimbare de state/props | Change detection run |
+> | React DevTools Profiler | Angular DevTools Profiler |
+> | `React.memo` | `ChangeDetectionStrategy.OnPush` |
+> | `useCallback` (funcție stabilă) | Metodele Angular sunt stabile prin natură |
+> | `useMemo` (valoare derivată) | `computed()` signal |
+> | Context re-render pe toți consumatorii | Service `BehaviorSubject` → re-sub la toți observatori |
+>
+> Ești deja familiarizat cu OnPush și change detection — poți explica React.memo pornind de acolo.
+
 #### Follow-up: *"When does React.memo actually make performance WORSE?"*
 
 > React.memo face **shallow comparison** la fiecare render al părintelui. Există două scenarii când e contraproductiv:
@@ -372,6 +393,27 @@ function JobsDashboard() {
 }
 ```
 
+📐 **Angular parallel pentru Q3 (dashboard real-time):**
+> ```typescript
+> // Angular — state normalizat cu signals + SSE (identic ca pattern)
+> @Injectable({ providedIn: 'root' })
+> export class JobsService {
+>   private _byId = signal<Record<string, Job>>({});
+>   readonly allJobs = computed(() => Object.values(this._byId()));
+>
+>   connectSSE() {
+>     const es = new EventSource('/api/jobs/stream');
+>     es.onmessage = (e) => {
+>       const job: Job = JSON.parse(e.data);
+>       this._byId.update(state => ({ ...state, [job.id]: job })); // O(1) update
+>     };
+>     return () => es.close(); // cleanup în ngOnDestroy
+>   }
+> }
+> // Identic conceptual cu varianta React — același SSE, același normalized state
+> ```
+> NgRx Entity Adapter în Angular e echivalentul exact al state normalizat — face același lucru (`addOne`, `updateOne`, `byId` selectors).
+
 #### Follow-up: *"How do you handle the case where a WebSocket disconnects and 5 jobs changed status while offline?"*
 
 > La reconnect, NU te baza că ai primit toate evenimentele — WebSocket/SSE sunt "best effort".
@@ -462,6 +504,40 @@ function Step3({ formData }: { formData: WizardFormData }) {
   );
 }
 ```
+
+📐 **Angular parallel pentru Q4 (form wizard):**
+> ```typescript
+> // Angular — AbortController funcționează identic în Angular
+> // Echivalentul setLoading(true) = signal() + AbortController
+> export class Step3Component implements OnDestroy {
+>   loading = signal(false);
+>   progress = signal(0);
+>   private abortController?: AbortController;
+>
+>   async startAnalysis() {
+>     this.abortController = new AbortController();
+>     this.loading.set(true);
+>
+>     // Exact același pattern ca React — AbortController e Web API, nu React API
+>     const { jobId } = await fetch('/api/analyze', {
+>       method: 'POST',
+>       signal: this.abortController.signal,
+>       body: JSON.stringify(this.formData),
+>     }).then(r => r.json());
+>
+>     // SSE pentru progress — identic
+>     const es = new EventSource(`/api/jobs/${jobId}/stream`);
+>     es.onmessage = (e) => {
+>       const event = JSON.parse(e.data);
+>       if (event.type === 'progress') this.progress.set(event.percent);
+>     };
+>   }
+>
+>   cancel() { this.abortController?.abort(); }
+>   ngOnDestroy() { this.cancel(); }
+> }
+> ```
+> `AbortController`, `EventSource`, `fetch` sunt Web APIs — funcționează identic în Angular și React.
 
 #### Follow-up: *"What happens if the user navigates away and comes back — is the result still there?"*
 

@@ -3,6 +3,9 @@
 > Lista completă de întrebări primite de la intervievator, cu răspunsuri complete
 > ancorate în experiența ta reală. Studiază asta cu 1-2 zile înainte de interviu.
 > Exersează cu voce tare — nu doar citești.
+>
+> **La fiecare întrebare frontend/React vei găsi un bloc `📐 Angular parallel` care
+> îți explică echivalentul din Angular — ca să poți raționa din ceea ce știi deja.**
 
 ---
 
@@ -27,6 +30,9 @@
 > Cel mai important pentru MVP: avoid over-engineering. Nu construiești infrastructure pentru
 > scale pe care nu-l ai. Refactorizezi când ai dovezi că e necesar."
 
+📐 **Angular parallel:**
+> Principiul e identic cu **Angular feature modules cu lazy loading**. `src/features/[feature]/` în Next.js ≈ `feature/feature.module.ts` în Angular. `index.ts` cu public API ≈ `public-api.ts` din Angular libraries. Regulile de structură (feature isolation, single responsibility, shared components în lib/) sunt universale — nu specifice React.
+
 ---
 
 **Q: When would you choose SSR vs SSG vs CSR in Next.js?**
@@ -45,6 +51,15 @@
 >
 > La Adobe Express, majority of features were SSR/SSG — am înțeles direct impactul
 > pe performance când trimiți mai puțin JS la client pe mobile."
+
+📐 **Angular parallel:**
+> Decizia SSR/SSG/CSR e identică cu Angular:
+> - **SSR** → Angular Universal / Angular 17+ `@angular/ssr` — `isPlatformServer()` pentru cod server-only
+> - **SSG** → Angular prerendering cu `outputMode: 'static'` în `angular.json`
+> - **CSR** → Default Angular SPA (fără Universal) — toate componentele rulează în browser
+> - **ISR** nu are echivalent direct în Angular — se implementează cu CDN caching headers
+>
+> Factorul de decizie e identic: SEO + date fresh = SSR. Date statice = SSG. Interactivitate after-load = CSR.
 
 ---
 
@@ -66,6 +81,16 @@
 >
 > Redux l-aș alege doar dacă echipa are deja experiență cu el sau dacă am nevoie de
 > time-travel debugging și Redux DevTools."
+
+📐 **Angular parallel — exact aceleași 4 categorii:**
+> | React | Angular | Notă |
+> |-------|---------|------|
+> | `useState` (local) | `signal()` în component | Local, fără sharing |
+> | Context API (simplu) | `@Injectable({ providedIn: 'root' })` service | Angular e mai simplu — fără Provider wrapper |
+> | Zustand (complex) | NgRx Signals Store sau service cu `signal()` | Tu știi NgRx deja! |
+> | React Query (server state) | Angular `HttpClient` + `shareReplay` sau `@tanstack/angular-query-experimental` | TanStack Query are adapter Angular cu API aproape identic |
+>
+> Avantajul tău față de un developer React pur: înțelegi de ce separarea server state vs UI state contează — ai văzut asta în Angular cu `HttpClient` vs NgRx.
 
 ---
 
@@ -89,6 +114,18 @@
 > dynamic imports + React.lazy. La Adobe am lucrat direct pe mobile performance —
 > am redus bundle size semnificativ prin modularizare și code splitting."
 
+📐 **Angular parallel — procesul e identic:**
+> | React | Angular | Echivalent |
+> |-------|---------|------------|
+> | React DevTools Profiler | Angular DevTools Profiler | Ambele arată change detection runs |
+> | `React.memo` | `ChangeDetectionStrategy.OnPush` | Skip re-render/CD dacă inputs n-au schimbat |
+> | `useMemo` | `computed()` signal | Valoare derivată, cached automat |
+> | `useCallback` | Metode de clasă (stabile prin natură) | Nu ai nevoie în Angular |
+> | `react-window` virtualizare | `@angular/cdk` VirtualScrollViewport | Same concept, different lib |
+> | `React.lazy` + Suspense | `loadComponent` în routing | Lazy loading code splitting |
+>
+> Când răspunzi la interviu, poți adăuga: *"Procesul de diagnostic e similar cu ce fac în Angular — Angular DevTools Profiler, OnPush pentru componente scumpe, computed signals pentru valori derivate."*
+
 ---
 
 **Q: How do you test components that rely on async data fetching?**
@@ -108,6 +145,23 @@
 >
 > `await waitFor(() => expect(screen.getByText('Emanuel')).toBeInTheDocument())` —
 > aștepți până apare, nu te bazezi pe timing."
+
+📐 **Angular parallel — două abordări:**
+> **MSW (recomandat, funcționează identic):** Aceleași handlere MSW funcționează cu Angular — MSW nu știe de framework, interceptează la nivel browser/node. Dacă știi MSW din proiecte Angular, transferi direct cunoștințele.
+>
+> **Angular `HttpClientTestingModule` (standard Angular):**
+> ```typescript
+> // Angular way — intercept HTTP cu HttpTestingController
+> const req = httpMock.expectOne('/api/users/1');
+> req.flush({ name: 'Test User' }); // simulezi response
+> // Echivalentul lui server.use(http.get(...)) din MSW
+> ```
+>
+> **Principiile de testing sunt identice:**
+> - Testezi comportament (ce vede userul), nu implementare (cum se fetchuiește)
+> - Mockezi la granița exterioară (network), nu intern
+> - Testezi: loading state, success state, error state
+> - `waitFor` în React ≈ `fixture.detectChanges()` + `await fixture.whenStable()` în Angular
 
 ---
 

@@ -2,6 +2,8 @@
 
 > Next.js SSR/SSG/CSR, state management (Zustand, React Query), debugging React,
 > testare componente async. Acoperă toate întrebările frontend din lista interviului.
+>
+> **Dacă știi Angular, știi deja 80% din concepte — doar sintaxa diferă.**
 
 ---
 
@@ -12,17 +14,17 @@
 ```
 src/
 ├── app/                        # App Router — routing bazat pe folder structure
-│   ├── layout.tsx              # Root layout (html, body, providers)
+│   ├── layout.tsx              # Root layout (html, body, providers) = AppComponent
 │   ├── page.tsx                # Home page (/)
-│   ├── loading.tsx             # Loading UI (Suspense automat)
-│   ├── error.tsx               # Error boundary
+│   ├── loading.tsx             # Loading UI (Suspense automat) = skeleton guard
+│   ├── error.tsx               # Error boundary = ErrorHandler
 │   ├── not-found.tsx           # 404
 │   │
 │   ├── (marketing)/            # Route group — nu afectează URL-ul
 │   │   └── about/page.tsx      # /about
 │   │
 │   ├── (app)/                  # Route group — layout separat pentru app
-│   │   ├── layout.tsx          # Layout cu sidebar, nav
+│   │   ├── layout.tsx          # Layout cu sidebar, nav = RouterModule cu named outlets
 │   │   ├── dashboard/page.tsx  # /dashboard
 │   │   └── settings/page.tsx   # /settings
 │   │
@@ -34,14 +36,16 @@ src/
 │   └── features/               # Componente specifice featurelui
 │       └── dashboard/
 │
-├── lib/                        # Utilities, helpers, clients (db, api)
+├── lib/                        # Utilities, helpers, clients (db, api) = shared/
 │   ├── db.ts                   # Prisma client singleton
 │   └── auth.ts                 # Auth helpers
 │
-├── hooks/                      # Custom hooks
-├── stores/                     # Zustand stores
-└── types/                      # TypeScript types
+├── hooks/                      # Custom hooks = services/ în Angular
+├── stores/                     # Zustand stores = NgRx / signal services
+└── types/                      # TypeScript types = models/
 ```
+
+> **Angular parallel pentru structură:** folder `features/` în Next.js ≈ lazy-loaded modules în Angular. `app/layout.tsx` ≈ `AppComponent`. `api/users/route.ts` ≈ un BFF simplu (nu ai nevoie de backend separat pentru MVP).
 
 ### Principii pentru MVP rapid și mentenabil
 
@@ -68,6 +72,18 @@ RAPID (speed):                  MENTENABIL (maintainability):
 | **SSG** | La build time | Date statice, blog, marketing | `generateStaticParams` |
 | **ISR** | La build + revalidare periodic | Date care se schimbă rar | `revalidate: 3600` |
 | **CSR** | În browser, după hydration | Date interactive, user-specific after load | `'use client'` + useEffect |
+
+### Echivalente Angular
+
+| Next.js | Angular | Notă |
+|---------|---------|------|
+| Server Component (SSR) | Angular Universal / Angular 17+ SSR | Date pe server înainte de HTML |
+| SSG cu generateStaticParams | Angular prerendering (`outputMode: 'static'`) | Build-time HTML generation |
+| ISR (revalidate: 3600) | Nu are direct echivalent — CDN + cache headers | ISR e specific Next.js |
+| CSR (`'use client'`) | Default Angular SPA | Toate componentele sunt "client" în Angular classic |
+| React Server Components | Angular Server Components (experimental în 19+) | Cod care rulează DOAR pe server |
+
+---
 
 ### Next.js App Router — Server Components by default
 
@@ -116,6 +132,35 @@ async function ProductPage({ params }) {
 }
 ```
 
+**Angular parallel — Angular 17+ SSR:**
+```typescript
+// Angular Universal / SSR — componentele Angular rulează pe server
+// Nu există distincție Server vs Client components în Angular clasic
+// Dar poți verifica dacă ești pe server:
+
+import { isPlatformBrowser, isPlatformServer } from '@angular/common';
+import { PLATFORM_ID, inject } from '@angular/core';
+
+@Component({ ... })
+export class ProductPageComponent {
+  private platformId = inject(PLATFORM_ID);
+
+  ngOnInit() {
+    if (isPlatformServer(this.platformId)) {
+      // Cod care rulează DOAR pe server (SSR)
+      // Acces la TransferState pentru a pasa date de pe server la browser
+    }
+    if (isPlatformBrowser(this.platformId)) {
+      // Cod care rulează DOAR în browser (window, localStorage)
+    }
+  }
+}
+```
+
+> **Marea diferență:** Next.js face distincția Server/Client explicit cu `'use client'`. Angular Universal rulează tot componenta pe server, apoi rehydratează pe client — mai puțin granular, dar mai simplu de raționat.
+
+---
+
 ### Când alegi SSR (Server Components async)
 
 ```tsx
@@ -130,13 +175,43 @@ async function Dashboard() {
 }
 ```
 
+**Angular equivalent:**
+```typescript
+// Angular SSR — datele se pot pre-fetch pe server cu TransferState
+// Ca să nu se facă același HTTP call de două ori (server + client)
+import { TransferState, makeStateKey } from '@angular/core';
+
+const USER_KEY = makeStateKey<User>('currentUser');
+
+@Component({ ... })
+export class DashboardComponent implements OnInit {
+  private transferState = inject(TransferState);
+  private http = inject(HttpClient);
+
+  ngOnInit() {
+    if (this.transferState.hasKey(USER_KEY)) {
+      // Browser: ia din state transferat de server (fără HTTP call)
+      this.user = this.transferState.get(USER_KEY, null);
+      this.transferState.remove(USER_KEY);
+    } else {
+      // Server: fetch real + stochează în TransferState
+      this.http.get<User>('/api/user').subscribe(user => {
+        this.user = user;
+        this.transferState.set(USER_KEY, user); // trimis în HTML
+      });
+    }
+  }
+}
+```
+
+---
+
 ### Când alegi SSG
 
 ```tsx
 // Blog posts, marketing pages, documentație
 // Date care nu se schimbă sau se schimbă rar
 
-// Generează pagini la build time pentru toți slug-urile cunoscute
 export async function generateStaticParams() {
   const posts = await db.post.findMany({ select: { slug: true } });
   return posts.map(post => ({ slug: post.slug }));
@@ -148,33 +223,50 @@ async function BlogPost({ params }: { params: { slug: string } }) {
 }
 ```
 
+**Angular equivalent:**
+```typescript
+// angular.json / app.config.ts — prerendering
+// Angular 17+ suportă static site generation (SSG)
+// Definești rutele care trebuie pre-rendered la build time
+export default {
+  prerender: {
+    routesFile: 'routes.txt', // lista de rute de pre-rendered
+    // SAU discoverRoutes: true (Angular încearcă să descopere automat)
+  }
+};
+// routes.txt:
+// /blog/post-1
+// /blog/post-2
+// /about
+```
+
+---
+
 ### Când alegi ISR (Incremental Static Regeneration)
 
 ```tsx
 // E-commerce: prețuri, stocuri — se schimbă dar nu în timp real
-// News site: articole noi la câteva ore
-
 async function ProductCatalog() {
   const products = await fetchProducts();
   return <ProductGrid products={products} />;
 }
 
 export const revalidate = 3600; // revalidează la fiecare oră
-// SAU: revalidate = 0 (mereu fresh) | false (niciodată — SSG pur)
 ```
+
+> ISR nu are echivalent direct în Angular. Cel mai apropiat: **CDN caching cu cache-control headers** pe endpoint-ul Angular (ex: `Cache-Control: max-age=3600, stale-while-revalidate=86400`). Nginx sau Cloudflare servesc HTML/JSON cached, Angular Universal regenerează la expirare.
+
+---
 
 ### Când alegi CSR
 
 ```tsx
 // Date care depind de interacțiunea utilizatorului DUPĂ load
-// Căutare, filtrare, paginare client-side
-// Widget-uri interactive (charts, maps, editors)
-
 'use client';
 
 function SearchResults() {
   const [query, setQuery] = useState('');
-  const { data } = useQuery({    // React Query — server state
+  const { data } = useQuery({
     queryKey: ['search', query],
     queryFn: () => searchProducts(query),
     enabled: query.length > 2,
@@ -184,11 +276,52 @@ function SearchResults() {
 }
 ```
 
+**Angular equivalent — default Angular SPA:**
+```typescript
+// Angular e CSR by default — tot codul rulează în browser
+// Echivalentul useQuery în Angular:
+
+@Component({
+  template: `
+    <input [(ngModel)]="query" (input)="onSearch()" />
+    @if (loading()) { <app-skeleton /> }
+    @for (product of results(); track product.id) {
+      <app-product-card [product]="product" />
+    }
+  `,
+})
+export class SearchComponent {
+  private productService = inject(ProductService);
+  private destroyRef = inject(DestroyRef);
+
+  query = signal('');
+  results = signal<Product[]>([]);
+  loading = signal(false);
+
+  onSearch() {
+    const q = this.query();
+    if (q.length < 3) return;
+
+    this.loading.set(true);
+    this.productService.search(q)
+      .pipe(
+        debounceTime(300),      // nu trimiți la fiecare tastă
+        distinctUntilChanged(), // nu trimiți dacă query e același
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(products => {
+        this.results.set(products);
+        this.loading.set(false);
+      });
+  }
+}
+```
+
 ---
 
 ## 3. State Management — Context vs Zustand vs Redux vs React Query
 
-### Când folosești ce
+### Când folosești ce (React)
 
 ```
 UI State (local):           useState / useReducer în component
@@ -198,19 +331,24 @@ Server/Async State:         React Query (TanStack Query) sau SWR
 Global Complex + DevTools:  Redux Toolkit (rar necesar în 2026)
 ```
 
+### Angular echivalent
+
+```
+UI State (local):           signal() în component
+Shared UI State (simplu):   Service cu signal / BehaviorSubject
+Shared App State (complex): NgRx Signals Store sau service cu signals
+Server/Async State:         Angular HttpClient + RxJS / TanStack Query Angular
+Global Complex + DevTools:  NgRx Store (Redux pattern — ai deja experiență!)
+```
+
+---
+
 ### Zustand — simplu, fără boilerplate
 
 ```typescript
 // stores/cart.store.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-}
 
 interface CartStore {
   items: CartItem[];
@@ -221,7 +359,7 @@ interface CartStore {
 }
 
 export const useCartStore = create<CartStore>()(
-  persist(  // persists în localStorage automat
+  persist(  // persists în localStorage automat — ca LocalStorageService în Angular
     (set, get) => ({
       items: [],
       total: 0,
@@ -247,22 +385,76 @@ export const useCartStore = create<CartStore>()(
 
       clearCart: () => set({ items: [], total: 0 }),
     }),
-    { name: 'cart-storage' }
+    { name: 'cart-storage' } // localStorage key
   )
 );
 
-// Folosire în component (fără Provider!)
+// Folosire în component (fără Provider — direct!)
 function CartIcon() {
   const { items, total } = useCartStore();
   return <div>Cart ({items.length}) — ${total}</div>;
 }
 
-// Selector pentru performance — re-render doar când `items.length` se schimbă
+// Selector pentru performance — re-render doar când count se schimbă
 function CartBadge() {
-  const count = useCartStore(state => state.items.length); // selector granular
+  const count = useCartStore(state => state.items.length);
   return <span>{count}</span>;
 }
 ```
+
+**Angular equivalent — Signal-based Service:**
+```typescript
+// cart.service.ts — exact aceleași capabilități, syntax Angular
+@Injectable({ providedIn: 'root' })
+export class CartService {
+  private _items = signal<CartItem[]>(
+    JSON.parse(localStorage.getItem('cart') ?? '[]') // persist la init
+  );
+
+  // Computed values = Zustand selectori
+  readonly items = this._items.asReadonly();
+  readonly total = computed(() =>
+    this._items().reduce((sum, i) => sum + i.price * i.quantity, 0)
+  );
+  readonly count = computed(() => this._items().length);
+
+  addItem(item: Omit<CartItem, 'quantity'>) {
+    this._items.update(items => {
+      const existing = items.find(i => i.id === item.id);
+      const updated = existing
+        ? items.map(i => i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i)
+        : [...items, { ...item, quantity: 1 }];
+      localStorage.setItem('cart', JSON.stringify(updated)); // persist
+      return updated;
+    });
+  }
+
+  removeItem(id: string) {
+    this._items.update(items => {
+      const updated = items.filter(i => i.id !== id);
+      localStorage.setItem('cart', JSON.stringify(updated));
+      return updated;
+    });
+  }
+
+  clear() {
+    this._items.set([]);
+    localStorage.removeItem('cart');
+  }
+}
+
+// Folosire — inject direct, fără Provider
+@Component({
+  template: `
+    <div>Cart ({{ cart.count() }}) — ${{ cart.total() }}</div>
+  `,
+})
+export class CartIconComponent {
+  cart = inject(CartService); // ← direct, fără context wrapper
+}
+```
+
+---
 
 ### React Query (TanStack Query) — server state
 
@@ -270,22 +462,9 @@ function CartBadge() {
 // Server state = date care trăiesc pe server, tu le caching local
 // React Query gestionează: loading, error, caching, refetch, optimistic updates
 
-// 1. Setup provider în layout
-// app/layout.tsx
-'use client';
+// 1. Setup provider în layout — NU există în Angular (serviciile sunt singleton global)
 const queryClient = new QueryClient();
-
-export default function RootLayout({ children }) {
-  return (
-    <html>
-      <body>
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      </body>
-    </html>
-  );
-}
+<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 
 // 2. Fetch cu useQuery
 function UserProfile({ userId }: { userId: string }) {
@@ -293,7 +472,7 @@ function UserProfile({ userId }: { userId: string }) {
     queryKey: ['user', userId],      // cache key — schimbă userId → refetch automat
     queryFn: () => fetchUser(userId),
     staleTime: 5 * 60 * 1000,        // consider fresh 5 minute
-    retry: 3,                        // retry de 3 ori pe eroare
+    retry: 3,
   });
 
   if (isLoading) return <Skeleton />;
@@ -302,45 +481,82 @@ function UserProfile({ userId }: { userId: string }) {
 }
 
 // 3. Mutații cu useMutation + invalidare cache
-function UpdateProfileForm({ userId }: { userId: string }) {
-  const queryClient = useQueryClient();
+const mutation = useMutation({
+  mutationFn: (data: UpdateUserDto) => updateUser(userId, data),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['user', userId] }); // refetch automat
+  },
+});
+```
 
-  const mutation = useMutation({
-    mutationFn: (data: UpdateUserDto) => updateUser(userId, data),
+**Angular equivalent — HttpClient + RxJS:**
+```typescript
+// Angular NU are React Query built-in, dar TanStack Query are adapter Angular
+// SAU folosești pattern-ul manual cu HttpClient
+
+// Varianta 1: Manual cache cu shareReplay (echivalent staleTime)
+@Injectable({ providedIn: 'root' })
+export class UserService {
+  private http = inject(HttpClient);
+  private cache = new Map<string, Observable<User>>();
+
+  getUser(id: string): Observable<User> {
+    if (!this.cache.has(id)) {
+      // shareReplay(1) = cache ultimul rezultat, nu mai face HTTP call dacă există
+      this.cache.set(id,
+        this.http.get<User>(`/api/users/${id}`).pipe(
+          shareReplay({ bufferSize: 1, refCount: false }),
+        )
+      );
+    }
+    return this.cache.get(id)!;
+  }
+
+  invalidateUser(id: string) {
+    this.cache.delete(id); // echivalentul queryClient.invalidateQueries
+  }
+}
+
+// Varianta 2: TanStack Query Angular adapter (recomandat în proiecte noi)
+// npm install @tanstack/angular-query-experimental
+import { injectQuery, injectMutation, QueryClient } from '@tanstack/angular-query-experimental';
+
+@Component({ ... })
+export class UserProfileComponent {
+  userId = input.required<string>();
+
+  // useQuery = injectQuery
+  userQuery = injectQuery(() => ({
+    queryKey: ['user', this.userId()],
+    queryFn: () => fetch(`/api/users/${this.userId()}`).then(r => r.json()),
+    staleTime: 5 * 60 * 1000,
+  }));
+
+  // useMutation = injectMutation
+  updateMutation = injectMutation(() => ({
+    mutationFn: (data: UpdateUserDto) =>
+      fetch(`/api/users/${this.userId()}`, { method: 'PATCH', body: JSON.stringify(data) }),
     onSuccess: () => {
-      // Invalidează cache-ul — refetch automat
-      queryClient.invalidateQueries({ queryKey: ['user', userId] });
+      this.queryClient.invalidateQueries({ queryKey: ['user', this.userId()] });
     },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
-
-  return (
-    <form onSubmit={(e) => {
-      e.preventDefault();
-      mutation.mutate({ name: e.target.name.value });
-    }}>
-      <input name="name" />
-      <button disabled={mutation.isPending}>
-        {mutation.isPending ? 'Saving...' : 'Save'}
-      </button>
-    </form>
-  );
+  }));
 }
 ```
+
+> **Dacă intervievatorul întreabă de React Query în Angular context:** TanStack Query are acum un adapter oficial Angular (`@tanstack/angular-query-experimental`). API-ul e aproape identic, dar folosești `injectQuery()` în loc de `useQuery()`.
+
+---
 
 ### Context API — când e suficient
 
 ```typescript
-// Context e bun pentru: theme, locale, auth user, modal state
-// NU pentru: date care se schimbă des (cauzeaza re-render pe tot arborele)
+// React Context = Angular DI, dar mai limitat
+// Context în React e bun pentru: theme, locale, auth user
 
 const ThemeContext = createContext<'light' | 'dark'>('light');
 
 function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
-
   return (
     <ThemeContext.Provider value={theme}>
       {children}
@@ -348,7 +564,32 @@ function ThemeProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Optimizare: separă value de setter dacă se schimbă rar
+// Componentele consumatoare trebuie să fie în interiorul Provider-ului
+function Header() {
+  const theme = useContext(ThemeContext);
+  return <header className={theme}>...</header>;
+}
+```
+
+**Angular equivalent — Service cu DI (mult mai simplu):**
+```typescript
+// NU ai nevoie de Provider wrapper — serviciul e disponibil global automat
+@Injectable({ providedIn: 'root' })
+export class ThemeService {
+  theme = signal<'light' | 'dark'>('light');
+
+  toggle() {
+    this.theme.update(t => t === 'light' ? 'dark' : 'light');
+  }
+}
+
+// Orice component injectează direct — fără Provider wrapper:
+@Component({
+  template: `<header [class]="theme.theme()">...</header>`,
+})
+export class HeaderComponent {
+  theme = inject(ThemeService);
+}
 ```
 
 ---
@@ -363,16 +604,25 @@ React DevTools → Profiler tab → Record → interacționezi → Stop
 → Caută componente care re-renderează fără motiv (fără props schimbate)
 ```
 
+**Angular equivalent — Angular DevTools:**
+```
+Angular DevTools (extensie Chrome) → Profiler tab → Start profiling
+→ Change detection runs arată câte CD cycles rulează
+→ Caută componente cu OnPush care totuși se re-renderizează des
+→ Signals: schimbarea unui signal declanșează CD GRANULAR, nu pe tot arborele
+```
+
 ### Pas 2: Cauze comune și fix-uri
 
 ```tsx
+// REACT — cauze re-render inutil
+
 // CAUZA 1: Funcție recreată la fiecare render
 // ❌
 function Parent() {
   const handleClick = () => doSomething(); // nouă funcție la fiecare render
   return <Child onClick={handleClick} />;
 }
-
 // ✅
 function Parent() {
   const handleClick = useCallback(() => doSomething(), []); // stabilă
@@ -381,37 +631,55 @@ function Parent() {
 
 // CAUZA 2: Obiect/array recreat la fiecare render
 // ❌
-function Parent() {
-  const config = { color: 'red', size: 'large' }; // nou la fiecare render
-  return <Child config={config} />;
-}
-
+const config = { color: 'red', size: 'large' }; // nou la fiecare render
 // ✅
-const CONFIG = { color: 'red', size: 'large' }; // în afara componentei
-// SAU
-const config = useMemo(() => ({ color: 'red', size: 'large' }), []);
+const CONFIG = { color: 'red', size: 'large' }; // în afara componentei — constant
 
 // CAUZA 3: Child nu e memo-izat
-// ❌ Child re-renderează chiar dacă props nu s-au schimbat
-const Child = ({ name }) => <div>{name}</div>;
-
-// ✅ Skip re-render dacă props sunt identice (shallow comparison)
 const Child = React.memo(({ name }) => <div>{name}</div>);
 
-// CAUZA 4: State update în context cauzează re-render tuturor consumatorilor
-// Fix: Zustand cu selectori granulari (re-render doar când valoarea selectată se schimbă)
-const count = useStore(state => state.count); // nu re-renderează dacă altceva din store se schimbă
+// CAUZA 4: Context schimbat frecvent = re-render pe TOȚI consumatorii
+// Fix: Zustand cu selectori granulari
+const count = useStore(state => state.count); // re-render DOAR când count se schimbă
 ```
 
-### Pas 3: Computații costisitoare
+```typescript
+// ANGULAR — cauze re-render inutil
+
+// CAUZA 1: Change detection implicit (Default strategy) — CD rulează pe tot arborele
+// ✅ Fix: OnPush — CD rulează DOAR când @Input referința se schimbă
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush, // ← React.memo equivalent
+})
+export class ChildComponent {
+  @Input() name!: string;
+}
+
+// CAUZA 2: Metode apelate în template (se recalculează la fiecare CD run)
+// ❌
+// template: {{ getExpensiveValue() }}  — se apelează la fiecare CD!
+// ✅ Fix: computed signal sau pipe pur
+expensive = computed(() => this.doExpensiveCalculation()); // calculat o dată, cached
+// template: {{ expensive() }}
+
+// CAUZA 3: Subscripție fără async pipe (se recalculează)
+// ✅ async pipe se unsubscribe automat + declanșează CD corect
+// template: {{ user$ | async }}
+
+// CAUZA 4: Signals — granular reactivity (Angular 17+)
+// signal() și computed() declanșează CD GRANULAR per component
+// Nu reiterează toată aplicația — cel mai eficient
+```
+
+### Pas 3: Computații costisitoare și virtualizare
 
 ```tsx
-// Filtrare/sortare pe array mare — fără memo: recalculează la fiecare render
+// REACT — useMemo pentru filtrare/sortare costisitoare
 const filteredProducts = useMemo(() =>
   products
     .filter(p => p.category === selectedCategory)
     .sort((a, b) => a.price - b.price),
-  [products, selectedCategory] // recalculează DOAR când acestea se schimbă
+  [products, selectedCategory]
 );
 
 // Virtualizare pentru liste lungi (1000+ iteme)
@@ -420,11 +688,35 @@ import { FixedSizeList } from 'react-window';
 function BigList({ items }) {
   return (
     <FixedSizeList height={500} itemCount={items.length} itemSize={50} width="100%">
-      {({ index, style }) => (
-        <div style={style}>{items[index].name}</div>
-      )}
+      {({ index, style }) => <div style={style}>{items[index].name}</div>}
     </FixedSizeList>
   );
+}
+```
+
+```typescript
+// ANGULAR — computed() pentru filtrare costisitoare
+filteredProducts = computed(() =>
+  this.products()
+    .filter(p => p.category === this.selectedCategory())
+    .sort((a, b) => a.price - b.price)
+  // Recalculat DOAR când products() sau selectedCategory() se schimbă
+);
+
+// Virtualizare Angular — @angular/cdk VirtualScrollViewport
+// npm install @angular/cdk
+@Component({
+  template: `
+    <cdk-virtual-scroll-viewport itemSize="50" style="height: 500px">
+      <div *cdkVirtualFor="let item of items; trackBy: trackById">
+        {{ item.name }}
+      </div>
+    </cdk-virtual-scroll-viewport>
+  `,
+})
+export class BigListComponent {
+  items = input<Item[]>([]);
+  trackById = (_: number, item: Item) => item.id;
 }
 ```
 
@@ -433,39 +725,24 @@ function BigList({ items }) {
 ## 5. Testarea componentelor cu async data fetching
 
 ```tsx
-// Setup: vitest + React Testing Library + MSW (Mock Service Worker)
-// MSW interceptează fetch/axios la nivel de Service Worker — realistic!
+// REACT — Setup: vitest + React Testing Library + MSW (Mock Service Worker)
+// MSW interceptează fetch la nivel de network — realistic!
 
-// 1. Mock server setup (src/mocks/server.ts)
+// 1. Mock server setup
 import { setupServer } from 'msw/node';
 import { http, HttpResponse } from 'msw';
 
 export const server = setupServer(
   http.get('/api/users/:id', ({ params }) => {
-    return HttpResponse.json({
-      id: params.id,
-      name: 'Test User',
-      email: 'test@example.com',
-    });
+    return HttpResponse.json({ id: params.id, name: 'Test User' });
   }),
-
-  http.get('/api/users', () => {
-    return HttpResponse.json([
-      { id: '1', name: 'Alice' },
-      { id: '2', name: 'Bob' },
-    ]);
-  })
 );
 
-// vitest.setup.ts
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers()); // reset după fiecare test!
 afterAll(() => server.close());
 
 // 2. Test pentru component cu fetch
-import { render, screen, waitFor } from '@testing-library/react';
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-
 function renderWithProviders(ui: React.ReactElement) {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } } // nu retry în teste!
@@ -476,45 +753,31 @@ function renderWithProviders(ui: React.ReactElement) {
 }
 
 describe('UserProfile', () => {
-  it('shows loading state initially', () => {
-    renderWithProviders(<UserProfile userId="1" />);
-    expect(screen.getByRole('progressbar')).toBeInTheDocument();
-  });
-
   it('shows user data after fetch', async () => {
     renderWithProviders(<UserProfile userId="1" />);
 
     await waitFor(() => {
       expect(screen.getByText('Test User')).toBeInTheDocument();
     });
-    expect(screen.getByText('test@example.com')).toBeInTheDocument();
   });
 
   it('shows error state when fetch fails', async () => {
-    // Override handler pentru acest test specific
     server.use(
-      http.get('/api/users/:id', () => {
-        return HttpResponse.error();
-      })
+      http.get('/api/users/:id', () => HttpResponse.error())
     );
-
     renderWithProviders(<UserProfile userId="1" />);
-
     await waitFor(() => {
       expect(screen.getByText(/failed to load/i)).toBeInTheDocument();
     });
   });
 });
 
-// 3. Test pentru user interactions cu async effects
-import userEvent from '@testing-library/user-event';
-
-it('submits form and shows success message', async () => {
-  const user = userEvent.setup(); // setup înainte de render
+// 3. User interactions async
+it('submits form and shows success', async () => {
+  const user = userEvent.setup();
   renderWithProviders(<CreateUserForm />);
 
   await user.type(screen.getByLabelText('Name'), 'Emanuel');
-  await user.type(screen.getByLabelText('Email'), 'em@test.com');
   await user.click(screen.getByRole('button', { name: /submit/i }));
 
   await waitFor(() => {
@@ -523,21 +786,91 @@ it('submits form and shows success message', async () => {
 });
 ```
 
+**Angular equivalent — HttpClientTestingModule + Spectator:**
+```typescript
+// ANGULAR — TestBed + HttpClientTestingModule (built-in) SAU MSW (funcționează la fel)
+
+// Varianta 1: HttpClientTestingModule (standard Angular)
+import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+
+describe('UserProfileComponent', () => {
+  let httpMock: HttpTestingController;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [UserProfileComponent, HttpClientTestingModule],
+    }).compileComponents();
+
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => httpMock.verify()); // verifică că nu sunt requesturi neprevăzute
+
+  it('shows user data after fetch', async () => {
+    const fixture = TestBed.createComponent(UserProfileComponent);
+    fixture.componentInstance.userId = '1';
+    fixture.detectChanges();
+
+    // Intercept request HTTP (Angular-way de MSW)
+    const req = httpMock.expectOne('/api/users/1');
+    expect(req.request.method).toBe('GET');
+    req.flush({ id: '1', name: 'Test User' }); // simul response
+
+    fixture.detectChanges(); // trigger change detection
+
+    const el = fixture.nativeElement.querySelector('.user-name');
+    expect(el.textContent).toContain('Test User');
+  });
+
+  it('shows error state', async () => {
+    const fixture = TestBed.createComponent(UserProfileComponent);
+    fixture.componentInstance.userId = '1';
+    fixture.detectChanges();
+
+    const req = httpMock.expectOne('/api/users/1');
+    req.error(new ProgressEvent('error'), { status: 500 }); // simul eroare
+
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.error')).toBeTruthy();
+  });
+});
+
+// Varianta 2: MSW funcționează și cu Angular (intercept la nivel browser/node)
+// Aceleași handlere, același API — avantaj: tests mai realistic
+import { setupServer } from 'msw/node';
+// ...identic cu React, MSW nu știe de React/Angular
+```
+
+> **MSW e framework-agnostic.** Dacă știi MSW din Angular testing, funcționează identic în React testing. Interceptează requesturi la nivel de network, înainte să ajungă la orice framework.
+
 ---
 
 ## Întrebări de interviu — Frontend
 
 **Q: Cum structurezi un proiect Next.js pentru MVP rapid?**
-> Feature-based folder structure (nu type-based). Server Components by default pentru tot ce nu e interactiv. shadcn/ui pentru componente UI gata. Zustand pentru state simplu. React Query pentru server state. Route Handlers ca BFF. Vercel pentru deployment. Regula: nu construiesc ce nu am nevoie acum.
+
+> Feature-based folder structure. Server Components by default pentru tot ce nu e interactiv. shadcn/ui. Zustand pentru state simplu. React Query pentru server state. Route Handlers ca BFF. Vercel pentru deployment.
+>
+> **Dacă compari cu Angular:** "La fel cum în Angular fac feature modules cu lazy loading, în Next.js am `app/(features)/[feature]/page.tsx`. Principiile sunt identice — feature isolation, lazy loading, shared components."
 
 **Q: SSR vs SSG vs CSR — când alegi?**
-> **SSR (Server Component async):** date personalizate per user, auth, date care trebuie fresh. **SSG:** pagini statice cu date la build time — blog, marketing, docs. **ISR:** date care se schimbă dar nu real-time — e-commerce, news. **CSR:** interactivitate post-load — search, filtrare, editors.
+
+> **Server Components (SSR):** date personalizate per user, auth, date fresh. **SSG:** pagini statice — blog, marketing. **ISR:** date semi-statice — e-commerce. **CSR:** interactivitate post-load.
+>
+> **Angular parallel:** "În Angular Universal/SSR, luam aceleași decizii. Paginile cu SEO important → SSR. Paginile de dashboard → CSR. Conceptul e identic, implementarea diferă."
 
 **Q: Cum depanezi un component React lent?**
-> React DevTools Profiler → identific ce re-renderează inutil. Cauze comune: funcții recreate la fiecare render (fix: useCallback), obiecte recreate (fix: useMemo sau constantă), child fără React.memo. Computații costisitoare: useMemo. Liste lungi: react-window pentru virtualizare.
+
+> React DevTools Profiler → identific ce re-renderează inutil. Cauze comune: funcții recreate (useCallback), obiecte recreate (useMemo), child fără React.memo. Computații costisitoare: useMemo. Liste lungi: react-window.
+>
+> **Angular parallel:** "Procesul e identic cu Angular DevTools. OnPush în Angular = React.memo. `computed()` în Angular = `useMemo`. Virtualizarea cu CDK VirtualScrollViewport = react-window."
 
 **Q: Context vs Zustand vs React Query?**
-> Context: theme, locale, auth user — date care nu se schimbă des. Zustand: UI state complex partajat între componente (cart, modal, filters). React Query: orice date de pe server — gestionează loading, error, caching, invalidare. Nu folosesc Redux decât dacă echipa are deja experiență cu el.
+
+> Context: theme, locale, auth. Zustand: UI state complex partajat. React Query: date de pe server cu caching. Nu Redux decât cu echipă experimentată.
+>
+> **Angular parallel:** "E același pattern: Angular DI (servicii) = Context/Zustand. Angular HttpClient + shareReplay = React Query de bază. TanStack Query are acum adapter Angular dacă vrei API identic."
 
 ---
 
